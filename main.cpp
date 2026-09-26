@@ -62,3 +62,59 @@ public:
     {
     }
 };
+class OrderMatchingEngine
+{
+private:
+    int nextOrderId;
+    int sequence;
+
+public:
+    OrderMatchingEngine()
+    {
+        nextOrderId = 1;
+        sequence = 1;
+
+        initializeOrderBook();
+    }
+
+    void placeBuyOrder()
+    {
+        double price;
+        int quantity;
+        int result;
+
+        cout << "\nEnter buy price: ";
+        cin >> price;
+
+        cout << "Enter quantity: ";
+        cin >> quantity;
+
+        result = addBuyOrderC(
+            nextOrderId,
+            price,
+            quantity,
+            sequence
+        );
+
+        if (result == 1)
+        {
+            BuyOrder order(
+                nextOrderId,
+                price,
+                quantity,
+                sequence
+            );
+
+            cout << "\nBuy Order Added\n";
+            order.display();
+
+            nextOrderId++;
+            sequence++;
+
+            matchOrdersC();
+        }
+        else
+        {
+            cout << "\nUnable to add order.\n";
+        }
+    }
