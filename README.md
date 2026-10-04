@@ -11,3 +11,23 @@ The engine follows the **Price-Time Priority** principle:
 1. The order with the better price gets higher priority.
 2. If multiple orders have the same price, the order submitted earlier gets higher priority.
 3. A trade is executed when the highest buy price is greater than or equal to the lowest sell price.
+## Features
+
+- Buy order placement
+- Sell order placement
+- Price-Time Priority matching
+- Automatic order matching
+- Full order execution
+- Partial order execution
+- Order cancellation
+- Order modification
+- Order search by Order ID
+- Active order tracking
+- Trade history
+- Market summary
+- Best Bid and Best Ask
+- Bid-Ask Spread calculation
+- Mid-market price calculation
+- Order book depth
+- Trader identification
+- Input validation
