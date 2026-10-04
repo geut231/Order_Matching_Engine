@@ -11,115 +11,114 @@ Order::Order(int i, double r, int q, int n, Orderside s, string t)
     side = s;
     status = Orderatatus::ACTIVE;
     trader = t;
-}
 
-void Order::show()
-{
-    cout << "Order ID:" << id << endl;
-    cout << "Price: " << rate << endl;
-    cout << "Quantity: " << qty << endl;
-    cout << "Sequence: " << no << endl;
-}
-
-int Order::getid()
-{
-    return id;
-}
-
-double Order::getrate()
-{
-    return rate;
-}
-
-int Order::getqty()
-{
-    return qty;
-}
-
-int Order::getoriginalqty()
-{
-    return originalqty;
-}
-
-int Order::getno()
-{
-    return no;
-}
-
-Orderside Order::getSide()
-{
-    return side;
-}
-
-Orderstatus Order::getStatus()
-{
-    return status;
-}
-
-string Order::getTrader()
-{
-    return trader;
-}
-
-void Order::setqty(int q)
-{
-    qty = q;
-
-    if (qty <= 0)
+    void Order::show()
     {
-        qty = 0;
-        status = Orderstatus::FILLED;
-    }
-    else if (qty < originalqty)
-    {
-        status = Orderstatus::PARTIALLY_FILLED;
-    }
-    else
-    {
-        status = Orderstatus::ACTIVE;
-    }
-}
-
-void Order::setrate(double r)
-{
-    rate = r;
-}
-
-void Order::setstatus(Orderstatus s)
-{
-    status = s;
-}
-
-void Order::settrader(string t)
-{
-    trader = t;
-}
-
-bool Order::valid()
-{
-    if (id <= 0)
-    {
-        return false;
+        cout << "Order ID:" << id << endl;
+        cout << "Price: " << rate << endl;
+        cout << "Quantity: " << qty << endl;
+        cout << "Sequence: " << no << endl;
     }
 
-    if (rate <= 0)
+    int Order::getid()
     {
-        return false;
+        return id;
     }
 
-    if (qty <= 0)
+    double Order::getrate()
     {
-        return false;
+        return rate;
     }
 
-    if (no <= 0)
+    int Order::getqty()
     {
-        return false;
+        return qty;
     }
 
-    if (trader.empty())
+    int Order::getoriginalqty()
     {
-        return false;
+        return originalqty;
     }
-    return true;
-}
+
+    int Order::getno()
+    {
+        return no;
+    }
+
+    Orderside Order::getSide()
+    {
+        return side;
+    }
+
+    Orderstatus Order::getStatus()
+    {
+        return status;
+    }
+
+    string Order::getTrader()
+    {
+        return trader;
+    }
+
+    void Order::setqty(int q)
+    {
+        qty = q;
+
+        if (qty <= 0)
+        {
+            qty = 0;
+            status = Orderstatus::FILLED;
+        }
+        else if (qty < originalqty)
+        {
+            status = Orderstatus::PARTIALLY_FILLED;
+        }
+        else
+        {
+            status = Orderstatus::ACTIVE;
+        }
+    }
+
+    void Order::setrate(double r)
+    {
+        rate = r;
+    }
+
+    void Order::setstatus(Orderstatus s)
+    {
+        status = s;
+    }
+
+    void Order::settrader(string t)
+    {
+        trader = t;
+    }
+
+    bool Order::valid()
+    {
+        if (id <= 0)
+        {
+            return false;
+        }
+
+        if (rate <= 0)
+        {
+            return false;
+        }
+
+        if (qty <= 0)
+        {
+            return false;
+        }
+
+        if (no <= 0)
+        {
+            return false;
+        }
+
+        if (trader.empty())
+        {
+            return false;
+        }
+        return true;
+    }
