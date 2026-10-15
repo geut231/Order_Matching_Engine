@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "Order.h"
+#include "OrderBook.h"
 using namespace std;
 
 class BuyOrder : public Order
