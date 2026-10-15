@@ -7,11 +7,12 @@ Order::Order(int i, double r, int q, int n, Orderside s, string t)
     id = i;
     rate = r;
     qty = q;
+    originalqty = q;
     no = n;
     side = s;
-    status = Orderatatus::ACTIVE;
+    status = Orderstatus::ACTIVE;
     trader = t;
-
+}
     void Order::show()
     {
         cout << "Order ID:" << id << endl;
@@ -122,3 +123,67 @@ Order::Order(int i, double r, int q, int n, Orderside s, string t)
         }
         return true;
     }
+    bool Order::isBuy()
+{
+    return side == Orderside::BUY;
+}
+
+bool Order::isSell()
+{
+    return side == Orderside::SELL;
+}
+
+void Order::execute(int quantity)
+{
+    if (quantity <= 0 || quantity > qty)
+    {
+        return;
+    }
+
+    qty = qty - quantity;
+
+    if (qty == 0)
+    {
+        status = Orderstatus::FILLED;
+    }
+    else
+    {
+        status = Orderstatus::PARTIALLY_FILLED;
+    }
+}
+
+void Order::cancel()
+{
+    if (status != Orderstatus::FILLED)
+    {
+        status = Orderstatus::CANCELLED;
+    }
+}
+
+string Order::getsidestring()
+{
+    if (side == Orderside::BUY)
+    {
+        return "BUY";
+    }
+
+    return "SELL";
+}
+
+string Order::getstatusstring()
+{
+    if (status == Orderstatus::ACTIVE)
+    {
+        return "ACTIVE";
+    }
+    else if (status == Orderstatus::PARTIALLY_FILLED)
+    {
+        return "PARTIALLY FILLED";
+    }
+    else if (status == Orderstatus::FILLED)
+    {
+        return "FILLED";
+    }
+
+    return "CANCELLED";
+}

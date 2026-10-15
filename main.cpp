@@ -2,13 +2,14 @@
 #include <string>
 #include "Order.h"
 #include "OrderBook.h"
+#include "MatchingEngine.h"
 using namespace std;
 
 class BuyOrder : public Order
 {
 public:
     BuyOrder(int id, double p, int q, int s)
-        : Order(id, p, q, s)
+        : Order(id,p,q,s,Orderside::BUY)
     {
     }
 };
@@ -17,7 +18,7 @@ class SellOrder : public Order
 {
 public:
     SellOrder(int id, double p, int q, int s)
-        : Order(id, p, q, s)
+        : Order(id,p,q,s,Orderside::SELL)
     {
     }
 };

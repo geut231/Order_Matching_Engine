@@ -45,10 +45,6 @@ public:
     );
 
     void showOrderBook();
-    void showTrades();
-    void showOrderHistory();
-    void showMarketSummary();
-    void showDepth();
 
     int getNextOrderId();
     int getNextSequence();

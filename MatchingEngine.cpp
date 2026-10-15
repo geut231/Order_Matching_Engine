@@ -33,11 +33,8 @@ bool MatchingEngine::placeBuyOrder(
         return false;
     }
 
-    if (!orderBook.addbuy(order))
-    {
-        return false;
-    }
-
+    orderBook.addbuy(order);
+   
     nextOrderId++;
     nextSequence++;
 
@@ -71,10 +68,8 @@ bool MatchingEngine::placeSellOrder(
         return false;
     }
 
-    if (!orderBook.addsell(order))
-    {
-        return false;
-    }
+    orderBook.addsell(order);
+   
 
     nextOrderId++;
     nextSequence++;
@@ -132,25 +127,6 @@ void MatchingEngine::showOrderBook()
     orderBook.showOrderBook();
 }
 
-void MatchingEngine::showTrades()
-{
-    orderBook.showTrades();
-}
-
-void MatchingEngine::showOrderHistory()
-{
-    orderBook.showOrderHistory();
-}
-
-void MatchingEngine::showMarketSummary()
-{
-    orderBook.showMarketSummary();
-}
-
-void MatchingEngine::showDepth()
-{
-    orderBook.showDepth();
-}
 int MatchingEngine::getNextOrderId()
 {
     return nextOrderId;
