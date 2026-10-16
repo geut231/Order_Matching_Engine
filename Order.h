@@ -37,7 +37,7 @@ public:
     void show();
 
     int getid();
-    double getrate();
+    double getrate() const;
     int getqty();
     int getoriginalqty();
     int getno();

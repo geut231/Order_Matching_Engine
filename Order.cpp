@@ -26,7 +26,7 @@ Order::Order(int i, double r, int q, int n, Orderside s, string t)
         return id;
     }
 
-    double Order::getrate()
+    double Order::getrate() const
     {
         return rate;
     }
