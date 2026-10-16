@@ -47,5 +47,5 @@ public:
     bool cancelOrder(int id);
     bool modifyOrder(int id, double newPrice, int newQuantity);
     bool findOrder(int id, Order& result);
-    void showOrdersBook();
+    void showOrderBook();
 };
