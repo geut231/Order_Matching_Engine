@@ -33,6 +33,9 @@ protected:
 
 public:
     Order(int i, double r, int q, int n, Orderside s, string t = "Anonymous");
+    virtual ~Order() = default;
+
+    virtual void showDetails();
 
     void show();
 
@@ -59,6 +62,24 @@ public:
 
     string getsidestring();
     string getstatusstring();
+};
+
+class BuyOrder : public Order
+{
+public:
+    BuyOrder(int i, double r, int q, int n,
+             string t = "Anonymous");
+
+    void showDetails() override;
+};
+
+class SellOrder : public Order
+{
+public:
+    SellOrder(int i, double r, int q, int n,
+              string t = "Anonymous");
+
+    void showDetails() override;
 };
 
 #endif
