@@ -13,117 +13,130 @@ Order::Order(int i, double r, int q, int n, Orderside s, string t)
     status = Orderstatus::ACTIVE;
     trader = t;
 }
-    void Order::show()
+void Order::show()
+{
+    cout << "Order ID:" << id << endl;
+    cout << "Price: " << rate << endl;
+    cout << "Quantity: " << qty << endl;
+    cout << "Original Quantity: " << originalqty << endl;
+    cout << "Sequence: " << no << endl;
+    cout << "Trader: " << trader << endl;
+    cout << "Side: " << getsidestring() << endl;
+    cout << "Status: " << getstatusstring() << endl;
+}
+void Order::showDetails()
+{
+    show();
+}
+
+int Order::getid()
+{
+    return id;
+}
+
+double Order::getrate() const
+{
+    return rate;
+}
+
+int Order::getqty()
+{
+    return qty;
+}
+
+int Order::getoriginalqty()
+{
+    return originalqty;
+}
+
+int Order::getno() const
+{
+    return no;
+}
+
+Orderside Order::getSide()
+{
+    return side;
+}
+
+Orderstatus Order::getStatus()
+{
+    return status;
+}
+
+string Order::getTrader()
+{
+    return trader;
+}
+
+void Order::setqty(int q)
+{
+    if (q <= 0)
     {
-        cout << "Order ID:" << id << endl;
-        cout << "Price: " << rate << endl;
-        cout << "Quantity: " << qty << endl;
-        cout << "Sequence: " << no << endl;
+        return;
     }
+    qty = q;
 
-    int Order::getid()
+    if (qty == 0)
     {
-        return id;
+        status = Orderstatus::FILLED;
     }
-
-    double Order::getrate() const
+    else if (qty < originalqty)
     {
-        return rate;
+        status = Orderstatus::PARTIALLY_FILLED;
     }
-
-    int Order::getqty()
+    else
     {
-        return qty;
+        status = Orderstatus::ACTIVE;
     }
+}
 
-    int Order::getoriginalqty()
-    {
-        return originalqty;
-    }
-
-    int Order::getno()
-    {
-        return no;
-    }
-
-    Orderside Order::getSide()
-    {
-        return side;
-    }
-
-    Orderstatus Order::getStatus()
-    {
-        return status;
-    }
-
-    string Order::getTrader()
-    {
-        return trader;
-    }
-
-    void Order::setqty(int q)
-    {
-        qty = q;
-
-        if (qty <= 0)
-        {
-            qty = 0;
-            status = Orderstatus::FILLED;
-        }
-        else if (qty < originalqty)
-        {
-            status = Orderstatus::PARTIALLY_FILLED;
-        }
-        else
-        {
-            status = Orderstatus::ACTIVE;
-        }
-    }
-
-    void Order::setrate(double r)
-    {
+void Order::setrate(double r)
+{
+    if (r > 0)
         rate = r;
-    }
+}
 
-    void Order::setstatus(Orderstatus s)
-    {
-        status = s;
-    }
+void Order::setstatus(Orderstatus s)
+{
+    status = s;
+}
 
-    void Order::settrader(string t)
-    {
+void Order::settrader(string t)
+{
+    if (!t.empty())
         trader = t;
-    }
+}
 
-    bool Order::valid()
+bool Order::valid()
+{
+    if (id <= 0)
     {
-        if (id <= 0)
-        {
-            return false;
-        }
-
-        if (rate <= 0)
-        {
-            return false;
-        }
-
-        if (qty <= 0)
-        {
-            return false;
-        }
-
-        if (no <= 0)
-        {
-            return false;
-        }
-
-        if (trader.empty())
-        {
-            return false;
-        }
-        return true;
+        return false;
     }
-    bool Order::isBuy()
+
+    if (rate <= 0)
+    {
+        return false;
+    }
+
+    if (qty <= 0)
+    {
+        return false;
+    }
+
+    if (no <= 0)
+    {
+        return false;
+    }
+
+    if (trader.empty())
+    {
+        return false;
+    }
+    return true;
+}
+bool Order::isBuy()
 {
     return side == Orderside::BUY;
 }
@@ -135,7 +148,7 @@ bool Order::isSell()
 
 void Order::execute(int quantity)
 {
-    if (quantity <= 0 || quantity > qty)
+    if (status == Orderstatus::CANCELLED || status == Orderstatus::FILLED || quantity <= 0 || quantity > qty)
     {
         return;
     }
@@ -157,6 +170,7 @@ void Order::cancel()
     if (status != Orderstatus::FILLED)
     {
         status = Orderstatus::CANCELLED;
+        qty = 0;
     }
 }
 
@@ -186,4 +200,26 @@ string Order::getstatusstring()
     }
 
     return "CANCELLED";
+}
+
+BuyOrder::BuyOrder(int i, double r, int q, int n, string t)
+    : Order(i, r, q, n, Orderside::BUY, t)
+{
+}
+
+void BuyOrder::showDetails()
+{
+    cout << "\nBuy Order Details\n";
+    show();
+}
+
+SellOrder::SellOrder(int i, double r, int q, int n, string t)
+    : Order(i, r, q, n, Orderside::SELL, t)
+{
+}
+
+void SellOrder::showDetails()
+{
+    cout << "\nSell Order Details\n";
+    show();
 }
