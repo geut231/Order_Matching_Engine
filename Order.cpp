@@ -76,19 +76,8 @@ void Order::setqty(int q)
         return;
     }
     qty = q;
-
-    if (qty == 0)
-    {
-        status = Orderstatus::FILLED;
-    }
-    else if (qty < originalqty)
-    {
-        status = Orderstatus::PARTIALLY_FILLED;
-    }
-    else
-    {
-        status = Orderstatus::ACTIVE;
-    }
+    originalqty = q;
+    status = Orderstatus::ACTIVE;
 }
 
 void Order::setrate(double r)
@@ -106,6 +95,13 @@ void Order::settrader(string t)
 {
     if (!t.empty())
         trader = t;
+}
+void Order::setno(int n)
+{
+    if (n > 0)
+    {
+        no = n;
+    }
 }
 
 bool Order::valid()
@@ -170,7 +166,6 @@ void Order::cancel()
     if (status != Orderstatus::FILLED)
     {
         status = Orderstatus::CANCELLED;
-        qty = 0;
     }
 }
 
