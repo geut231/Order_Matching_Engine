@@ -7,7 +7,7 @@ using namespace std;
 
 struct BuyCompare
 {
-    bool operator()(Order a, Order b)
+    bool operator()(const Order &a, const Order &b) const
     {
         if (a.getrate() == b.getrate())
         {
@@ -20,7 +20,7 @@ struct BuyCompare
 
 struct SellCompare
 {
-    bool operator()(Order a, Order b)
+    bool operator()(const Order &a, const Order &b) const
     {
         if (a.getrate() == b.getrate())
         {
@@ -36,6 +36,7 @@ class OrderBook
 private:
     priority_queue<Order, vector<Order>, BuyCompare> buys;
     priority_queue<Order, vector<Order>, SellCompare> sells;
+    vector<Order> cancelledHistory;
 
 public:
     void addbuy(Order o);
@@ -46,6 +47,8 @@ public:
     void matchOrders();
     bool cancelOrder(int id);
     bool modifyOrder(int id, double newPrice, int newQuantity);
-    bool findOrder(int id, Order& result);
+    bool modifyOrder(int id, double newPrice, int newQuantity, int newSequence);
+    bool findOrder(int id, Order &result);
     void showOrderBook();
+    void showCancelledHistory();
 };
