@@ -43,7 +43,7 @@ public:
     double getrate() const;
     int getqty();
     int getoriginalqty();
-    int getno();
+    int getno() const;
     Orderside getSide();
     Orderstatus getStatus();
     string getTrader();
@@ -52,6 +52,7 @@ public:
     void setrate(double r);
     void setstatus(Orderstatus s);
     void settrader(string t);
+    void setno(int n);
 
     bool valid();
     bool isBuy();
