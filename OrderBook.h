@@ -1,3 +1,5 @@
+#ifndef ORDERBOOK_H
+#define ORDERBOOK_H
 #include <iostream>
 #include <queue>
 #include <vector>
@@ -52,3 +54,4 @@ public:
     void showOrderBook();
     void showCancelledHistory();
 };
+#endif

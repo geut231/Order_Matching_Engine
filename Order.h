@@ -37,7 +37,7 @@ public:
 
     virtual void showDetails();
 
-    void show();
+    void show() const;
 
     int getid();
     double getrate() const;
@@ -61,8 +61,8 @@ public:
     void execute(int quantity);
     void cancel();
 
-    string getsidestring();
-    string getstatusstring();
+    string getsidestring() const;
+    string getstatusstring() const;
 };
 
 class BuyOrder : public Order

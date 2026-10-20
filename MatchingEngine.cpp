@@ -11,8 +11,7 @@ MatchingEngine::MatchingEngine()
 bool MatchingEngine::placeBuyOrder(
     double price,
     int quantity,
-    string trader
-)
+    string trader)
 {
     if (price <= 0 || quantity <= 0 || trader.empty())
     {
@@ -25,8 +24,7 @@ bool MatchingEngine::placeBuyOrder(
         quantity,
         nextSequence,
         Orderside::BUY,
-        trader
-    );
+        trader);
 
     if (!order.valid())
     {
@@ -34,7 +32,7 @@ bool MatchingEngine::placeBuyOrder(
     }
 
     orderBook.addbuy(order);
-   
+
     nextOrderId++;
     nextSequence++;
 
@@ -46,8 +44,7 @@ bool MatchingEngine::placeBuyOrder(
 bool MatchingEngine::placeSellOrder(
     double price,
     int quantity,
-    string trader
-)
+    string trader)
 {
     if (price <= 0 || quantity <= 0 || trader.empty())
     {
@@ -60,8 +57,7 @@ bool MatchingEngine::placeSellOrder(
         quantity,
         nextSequence,
         Orderside::SELL,
-        trader
-    );
+        trader);
 
     if (!order.valid())
     {
@@ -69,7 +65,6 @@ bool MatchingEngine::placeSellOrder(
     }
 
     orderBook.addsell(order);
-   
 
     nextOrderId++;
     nextSequence++;
@@ -92,8 +87,7 @@ bool MatchingEngine::cancelOrder(int id)
 bool MatchingEngine::modifyOrder(
     int id,
     double newPrice,
-    int newQuantity
-)
+    int newQuantity)
 {
     if (newPrice <= 0 || newQuantity <= 0)
     {
@@ -103,11 +97,12 @@ bool MatchingEngine::modifyOrder(
     bool modified = orderBook.modifyOrder(
         id,
         newPrice,
-        newQuantity
-    );
+        newQuantity,
+        nextSequence);
 
     if (modified)
     {
+        nextSequence++;
         processMatching();
     }
 
@@ -116,8 +111,7 @@ bool MatchingEngine::modifyOrder(
 
 bool MatchingEngine::searchOrder(
     int id,
-    Order& result
-)
+    Order &result)
 {
     return orderBook.findOrder(id, result);
 }

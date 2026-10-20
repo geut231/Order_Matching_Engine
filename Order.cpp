@@ -13,7 +13,7 @@ Order::Order(int i, double r, int q, int n, Orderside s, string t)
     status = Orderstatus::ACTIVE;
     trader = t;
 }
-void Order::show()
+void Order::show() const
 {
     cout << "Order ID:" << id << endl;
     cout << "Price: " << rate << endl;
@@ -169,7 +169,7 @@ void Order::cancel()
     }
 }
 
-string Order::getsidestring()
+string Order::getsidestring() const
 {
     if (side == Orderside::BUY)
     {
@@ -179,7 +179,7 @@ string Order::getsidestring()
     return "SELL";
 }
 
-string Order::getstatusstring()
+string Order::getstatusstring() const
 {
     if (status == Orderstatus::ACTIVE)
     {
