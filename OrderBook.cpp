@@ -1,22 +1,28 @@
 #include "OrderBook.h"
-
+#include <algorithm>
 void OrderBook::addbuy(Order o)
 {
-    buys.push(o);
+    if (o.valid() && o.isBuy())
+        buys.push(o);
 }
 
 void OrderBook::addsell(Order o)
 {
-    sells.push(o);
+    if (o.valid() && o.isSell())
+        sells.push(o);
 }
 
 void OrderBook::showbuy()
 {
     priority_queue<Order, vector<Order>, BuyCompare> temp = buys;
 
-    cout<<"\nBUY ORDERS\n";
+    cout << "\nBUY ORDERS\n";
+    if (temp.empty())
+    {
+        cout << "No buy orders.\n";
+    }
 
-    while(!temp.empty())
+    while (!temp.empty())
     {
         temp.top().show();
         cout << endl;
@@ -28,24 +34,29 @@ void OrderBook::showsell()
 {
     priority_queue<Order, vector<Order>, SellCompare> temp = sells;
 
-    cout<<"\nSELL ORDERS\n";
+    cout << "\nSELL ORDERS\n";
 
-    while(!temp.empty())
+    if (temp.empty())
+    {
+        cout << "No sell orders.\n";
+    }
+
+    while (!temp.empty())
     {
         temp.top().show();
-        cout<<endl;
+        cout << endl;
         temp.pop();
     }
 }
 
 bool OrderBook::canmatch()
 {
-    if(buys.empty() || sells.empty())
+    if (buys.empty() || sells.empty())
     {
         return false;
     }
 
-    if(buys.top().getrate() >= sells.top().getrate())
+    if (buys.top().getrate() >= sells.top().getrate())
     {
         return true;
     }
@@ -65,22 +76,24 @@ void OrderBook::matchOrders()
         Order buy = buys.top();
         Order sell = sells.top();
 
-        int quantity;
+        buys.pop();
+        sells.pop();
 
-        if (buy.getqty() < sell.getqty())
+        int quantity = min(buy.getqty(), sell.getqty());
+
+        double tradePrice;
+
+        if (buy.getno() < sell.getno())
         {
-            quantity = buy.getqty();
+            tradePrice = buy.getrate();
         }
         else
         {
-            quantity = sell.getqty();
+            tradePrice = sell.getrate();
         }
 
         buy.execute(quantity);
         sell.execute(quantity);
-
-        buys.pop();
-        sells.pop();
 
         if (buy.getqty() > 0)
         {
@@ -115,6 +128,7 @@ bool OrderBook::cancelOrder(int id)
         if (o.getid() == id)
         {
             o.cancel();
+            cancelledHistory.push_back(o);
             found = true;
         }
         else
@@ -131,6 +145,7 @@ bool OrderBook::cancelOrder(int id)
         if (o.getid() == id)
         {
             o.cancel();
+            cancelledHistory.push_back(o);
             found = true;
         }
         else
@@ -145,7 +160,7 @@ bool OrderBook::cancelOrder(int id)
     return found;
 }
 
-bool OrderBook::findOrder(int id, Order& result)
+bool OrderBook::findOrder(int id, Order &result)
 {
     priority_queue<Order, vector<Order>, BuyCompare> tempBuy;
     priority_queue<Order, vector<Order>, SellCompare> tempSell;
@@ -188,12 +203,29 @@ bool OrderBook::findOrder(int id, Order& result)
 
 bool OrderBook::modifyOrder(int id, double newPrice, int newQuantity)
 {
-    if (newPrice <= 0 || newQuantity <= 0)
+    Order o(1, 1.0, 1, 1, Orderside::BUY);
+
+    if (!findOrder(id, o))
     {
         return false;
     }
 
-    Order o(0, 0, 0, 0, Orderside::BUY);
+    int newSequence = o.getno() + 1;
+
+    return modifyOrder(id, newPrice, newQuantity, newSequence);
+}
+bool OrderBook::modifyOrder(
+    int id,
+    double newPrice,
+    int newQuantity,
+    int newSequence)
+{
+    if (newPrice <= 0 || newQuantity <= 0 || newSequence <= 0)
+    {
+        return false;
+    }
+
+    Order o(1, 1.0, 1, 1, Orderside::BUY);
 
     if (!findOrder(id, o))
     {
@@ -206,10 +238,37 @@ bool OrderBook::modifyOrder(int id, double newPrice, int newQuantity)
         return false;
     }
 
-    cancelOrder(id);
+    priority_queue<Order, vector<Order>, BuyCompare> tempBuy;
+    priority_queue<Order, vector<Order>, SellCompare> tempSell;
+
+    while (!buys.empty())
+    {
+        Order current = buys.top();
+        buys.pop();
+
+        if (current.getid() != id)
+        {
+            tempBuy.push(current);
+        }
+    }
+
+    while (!sells.empty())
+    {
+        Order current = sells.top();
+        sells.pop();
+
+        if (current.getid() != id)
+        {
+            tempSell.push(current);
+        }
+    }
+
+    buys = tempBuy;
+    sells = tempSell;
 
     o.setrate(newPrice);
     o.setqty(newQuantity);
+    o.setno(newSequence);
     o.setstatus(Orderstatus::ACTIVE);
 
     if (o.isBuy())
@@ -222,4 +281,21 @@ bool OrderBook::modifyOrder(int id, double newPrice, int newQuantity)
     }
 
     return true;
+}
+
+void OrderBook::showCancelledHistory()
+{
+    cout << "\nCANCELLED ORDER HISTORY\n";
+
+    if (cancelledHistory.empty())
+    {
+        cout << "No cancelled orders in this session.\n";
+        return;
+    }
+
+    for (const Order &o : cancelledHistory)
+    {
+        o.show();
+        cout << '\n';
+    }
 }
