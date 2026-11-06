@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Matching Engine</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="sidebar">
+    <h2>Trade<span>Match</span></h2>
+
+    <nav>
+      <a href="#dashboard" class="active">Dashboard</a>
+      <a href="#place-order">Place Order</a>
+      <a href="#order-book">Order Book</a>
+      <a href="#trades">Trade History</a>
+      <a href="#active-orders">Active Orders</a>
+      <a href="#market">Market Summary</a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <p>Order Matching Engine</p>
+      <small>DS & OOPs Project</small>
+    </div>
+  </div>
+
+  <main>
+
+    <header>
+      <div>
+        <h1>Trading Dashboard</h1>
+        <p>Monitor and manage your orders in real time.</p>
+      </div>
+
+      <div class="status">
+        <span class="dot"></span>
+        Engine Online
+      </div>
+    </header>
+
+    <!-- Dashboard -->
+
+    <section id="dashboard">
+
+      <div class="stats">
+
+        <div class="stat-card">
+          <p>Active Orders</p>
+          <h2>12</h2>
+          <small>Currently in order book</small>
+        </div>
+
+        <div class="stat-card">
+          <p>Executed Trades</p>
+          <h2>28</h2>
+          <small>Successfully matched</small>
+        </div>
+
+        <div class="stat-card">
+          <p>Traded Quantity</p>
+          <h2>1,450</h2>
+          <small>Total units traded</small>
+        </div>
+
+        <div class="stat-card">
+          <p>Traded Value</p>
+          <h2>₹2.45L</h2>
+          <small>Total trade value</small>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Place Order -->
+
+    <section id="place-order">
+
+      <h2 class="section-title">Place an Order</h2>
+
+      <div class="order-forms">
+
+        <div class="form-card buy-card">
+          <h3>BUY ORDER</h3>
+
+          <form>
+            <label>Trader Name</label>
+            <input type="text" placeholder="Enter trader name">
+
+            <label>Price (₹)</label>
+            <input type="number" placeholder="Enter buy price">
+
+            <label>Quantity</label>
+            <input type="number" placeholder="Enter quantity">
+
+            <button type="button" class="buy-btn">
+              Place Buy Order
+            </button>
+          </form>
+        </div>
+
+        <div class="form-card sell-card">
+          <h3>SELL ORDER</h3>
+
+          <form>
+            <label>Trader Name</label>
+            <input type="text" placeholder="Enter trader name">
+
+            <label>Price (₹)</label>
+            <input type="number" placeholder="Enter sell price">
+
+            <label>Quantity</label>
+            <input type="number" placeholder="Enter quantity">
+
+            <button type="button" class="sell-btn">
+              Place Sell Order
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Order Book -->
+
+    <section id="order-book">
+
+      <h2 class="section-title">Order Book</h2>
+
+      <div class="order-book">
+
+        <div class="table-card">
+          <h3 class="green-text">BUY ORDERS</h3>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Sequence</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>#101</td>
+                <td>₹105.00</td>
+                <td>20</td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td>#103</td>
+                <td>₹103.00</td>
+                <td>15</td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>#105</td>
+                <td>₹100.00</td>
+                <td>30</td>
+                <td>5</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-card">
+          <h3 class="red-text">SELL ORDERS</h3>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Sequence</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>#102</td>
+                <td>₹108.00</td>
+                <td>10</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>#104</td>
+                <td>₹110.00</td>
+                <td>25</td>
+                <td>4</td>
+              </tr>
+              <tr>
+                <td>#106</td>
+                <td>₹112.00</td>
+                <td>20</td>
+                <td>6</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Trade History -->
+
+    <section id="trades">
+
+      <h2 class="section-title">Recent Trade History</h2>
+
+      <div class="table-card">
+
+        <table>
+          <thead>
+            <tr>
+              <th>Trade ID</th>
+              <th>Buy Order</th>
+              <th>Sell Order</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>#T01</td>
+              <td>#98</td>
+              <td>#99</td>
+              <td>₹100</td>
+              <td>10</td>
+              <td>₹1,000</td>
+            </tr>
+
+            <tr>
+              <td>#T02</td>
+              <td>#95</td>
+              <td>#97</td>
+              <td>₹105</td>
+              <td>15</td>
+              <td>₹1,575</td>
+            </tr>
+
+            <tr>
+              <td>#T03</td>
+              <td>#96</td>
+              <td>#100</td>
+              <td>₹110</td>
+              <td>20</td>
+              <td>₹2,200</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </section>
+
+    <!-- Active Orders -->
+
+    <section id="active-orders">
+
+      <h2 class="section-title">Active Orders</h2>
+
+      <div class="table-card">
+
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Trader</th>
+              <th>Side</th>
+              <th>Price</th>
+              <th>Remaining Qty</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>#101</td>
+              <td>Ananya</td>
+              <td class="green-text">BUY</td>
+              <td>₹105</td>
+              <td>20</td>
+              <td><span class="badge active-badge">ACTIVE</span></td>
+            </tr>
+
+            <tr>
+              <td>#102</td>
+              <td>Rahul</td>
+              <td class="red-text">SELL</td>
+              <td>₹108</td>
+              <td>10</td>
+              <td><span class="badge active-badge">ACTIVE</span></td>
+            </tr>
+
+            <tr>
+              <td>#103</td>
+              <td>Aman</td>
+              <td class="green-text">BUY</td>
+              <td>₹103</td>
+              <td>15</td>
+              <td><span class="badge partial-badge">PARTIAL</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </section>
+
+    <!-- Market Summary -->
+
+    <section id="market">
+
+      <h2 class="section-title">Market Summary</h2>
+
+      <div class="market-card">
+
+        <div>
+          <p>Best Bid</p>
+          <h2 class="green-text">₹105.00</h2>
+        </div>
+
+        <div>
+          <p>Best Ask</p>
+          <h2 class="red-text">₹108.00</h2>
+        </div>
+
+        <div>
+          <p>Spread</p>
+          <h2>₹3.00</h2>
+        </div>
+
+        <div>
+          <p>Mid Price</p>
+          <h2>₹106.50</h2>
+        </div>
+
+      </div>
+    </section>
+
+    <footer>
+      <p>Order Matching Engine | Built using C++, Data Structures and OOPs</p>
+    </footer>
+
+  </main>
+
+</body>
+
+</html>
