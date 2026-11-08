@@ -32,15 +32,17 @@ struct SellCompare
         return a.getrate() > b.getrate();
     }
 };
-
+class Database;
 class OrderBook
 {
 private:
+    Database* db;
     priority_queue<Order, vector<Order>, BuyCompare> buys;
     priority_queue<Order, vector<Order>, SellCompare> sells;
     vector<Order> cancelledHistory;
 
 public:
+    void setDatabase(Database* database);
     void addbuy(Order o);
     void addsell(Order o);
     void showbuy();

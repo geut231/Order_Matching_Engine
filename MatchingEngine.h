@@ -6,6 +6,7 @@
 
 using namespace std;
 
+class Database;
 class MatchingEngine
 {
 private:
@@ -13,9 +14,10 @@ private:
 
     int nextOrderId;
     int nextSequence;
+    Database* db;
 
 public:
-    MatchingEngine();
+    MatchingEngine(Database* database);
 
     bool placeBuyOrder(
         double price,

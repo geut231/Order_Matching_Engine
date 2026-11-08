@@ -1,3 +1,4 @@
+#include "Database.cpp"
 #include <iostream>
 #include <string>
 #include <limits>
@@ -5,11 +6,19 @@
 #include "OrderBook.cpp"
 #include "MatchingEngine.cpp"
 #include "MatchingEngine.h"
+#include "Database.h"
 using namespace std;
 
 int main()
+{   
+   Database db;
+
+if (!db.connect())
 {
-    MatchingEngine engine;
+    return 1;
+}
+
+MatchingEngine engine(&db);
     int choice = -1;
 
     do
@@ -22,6 +31,7 @@ int main()
         cout << "5. Modify Order\n";
         cout << "6. Search Active Order\n";
         cout << "7. Process Matching\n";
+        cout << "8. Show Trade History\n";
         cout << "0. Exit\n";
         cout << "Enter choice: ";
 
@@ -110,6 +120,10 @@ int main()
         {
             engine.processMatching();
             cout << "Matching process completed.\n";
+        }
+        else if (choice == 8)
+        {
+            db.showTradeHistory();
         }
         else if (choice != 0)
         {
