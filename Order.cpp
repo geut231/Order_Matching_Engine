@@ -68,16 +68,18 @@ string Order::getTrader()
 {
     return trader;
 }
-
 void Order::setqty(int q)
 {
-    if (q <= 0)
+    if (q > 0)
     {
-        return;
+        qty = q;
+        originalqty = q;
+        status = Orderstatus::ACTIVE;
     }
-    qty = q;
+}
+void Order::setoriginalqty(int q)
+{
     originalqty = q;
-    status = Orderstatus::ACTIVE;
 }
 
 void Order::setrate(double r)

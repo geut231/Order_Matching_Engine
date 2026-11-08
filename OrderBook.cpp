@@ -1,5 +1,10 @@
+#include "Database.h"
 #include "OrderBook.h"
 #include <algorithm>
+void OrderBook::setDatabase(Database* database)
+{
+    db = database;
+}
 void OrderBook::addbuy(Order o)
 {
     if (o.valid() && o.isBuy())
@@ -84,35 +89,43 @@ void OrderBook::matchOrders()
         double tradePrice;
 
         if (buy.getno() < sell.getno())
-        {
             tradePrice = buy.getrate();
-        }
         else
-        {
             tradePrice = sell.getrate();
-        }
 
         buy.execute(quantity);
         sell.execute(quantity);
 
-        if (buy.getqty() > 0)
+        if (!db->insertTrade(
+                buy.getid(),
+                sell.getid(),
+                tradePrice,
+                quantity))
         {
-            buys.push(buy);
+            cout << "Trade could not be saved.\n";
         }
 
+        db->updateOrder(
+            buy.getid(), buy.getrate(), buy.getqty(),
+            buy.getno(), buy.getstatusstring());
+
+        db->updateOrder(
+            sell.getid(), sell.getrate(), sell.getqty(),
+            sell.getno(), sell.getstatusstring());
+
+        if (buy.getqty() > 0)
+            buys.push(buy);
+
         if (sell.getqty() > 0)
-        {
             sells.push(sell);
-        }
 
         cout << "\nTrade Executed\n";
         cout << "Buy Order ID: " << buy.getid() << endl;
         cout << "Sell Order ID: " << sell.getid() << endl;
         cout << "Quantity: " << quantity << endl;
-        cout << "Trade Price: " << sell.getrate() << endl;
+        cout << "Trade Price: " << tradePrice << endl;
     }
 }
-
 bool OrderBook::cancelOrder(int id)
 {
     priority_queue<Order, vector<Order>, BuyCompare> tempBuy;

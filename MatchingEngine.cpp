@@ -1,11 +1,15 @@
+#include "Database.h"
 #include "MatchingEngine.h"
 
 using namespace std;
 
-MatchingEngine::MatchingEngine()
+MatchingEngine::MatchingEngine(Database* database)
 {
-    nextOrderId = 1;
-    nextSequence = 1;
+    db = database;
+    orderBook.setDatabase(database);
+    db->loadOrders(orderBook);
+    nextOrderId = db->getNextOrderId();
+    nextSequence = db->getNextSequence();
 }
 
 bool MatchingEngine::placeBuyOrder(
@@ -31,8 +35,20 @@ bool MatchingEngine::placeBuyOrder(
         return false;
     }
 
-    orderBook.addbuy(order);
+        if (!db->insertOrder(
+            order.getid(),
+            order.getrate(),
+            order.getqty(),
+            order.getoriginalqty(),
+            order.getno(),
+            order.getsidestring(),
+            order.getstatusstring(),
+            order.getTrader()))
+    {
+        return false;
+    }
 
+    orderBook.addbuy(order);
     nextOrderId++;
     nextSequence++;
 
@@ -63,7 +79,19 @@ bool MatchingEngine::placeSellOrder(
     {
         return false;
     }
-
+    
+    if (!db->insertOrder(
+            order.getid(),
+            order.getrate(),
+            order.getqty(),
+            order.getoriginalqty(),
+            order.getno(),
+            order.getsidestring(),
+            order.getstatusstring(),
+            order.getTrader()))
+    {
+        return false;
+    }
     orderBook.addsell(order);
 
     nextOrderId++;
@@ -80,7 +108,14 @@ void MatchingEngine::processMatching()
 }
 
 bool MatchingEngine::cancelOrder(int id)
-{
+{   
+     Order result(1, 1.0, 1, 1, Orderside::BUY);
+
+    if (!orderBook.findOrder(id, result))
+        return false;
+
+    if (!db->updateOrderStatus(id, "CANCELLED"))
+        return false;
     return orderBook.cancelOrder(id);
 }
 
@@ -93,6 +128,19 @@ bool MatchingEngine::modifyOrder(
     {
         return false;
     }
+
+    Order result(1, 1.0, 1, 1, Orderside::BUY);
+
+    if (!orderBook.findOrder(id, result))
+        return false;
+
+    if (!db->updateOrder(
+            id,
+            newPrice,
+            newQuantity,
+            nextSequence,
+            "ACTIVE"))
+        return false;
 
     bool modified = orderBook.modifyOrder(
         id,
@@ -108,7 +156,6 @@ bool MatchingEngine::modifyOrder(
 
     return modified;
 }
-
 bool MatchingEngine::searchOrder(
     int id,
     Order &result)

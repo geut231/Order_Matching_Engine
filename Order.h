@@ -49,6 +49,7 @@ public:
     string getTrader();
 
     void setqty(int q);
+    void setoriginalqty(int q);
     void setrate(double r);
     void setstatus(Orderstatus s);
     void settrader(string t);
