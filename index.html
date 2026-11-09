@@ -24,7 +24,7 @@
 
     <div class="sidebar-bottom">
       <p>Order Matching Engine</p>
-      <small>DS & OOPs Project</small>
+      <small>Native C++ & MySQL</small>
     </div>
   </div>
 
@@ -33,12 +33,12 @@
     <header>
       <div>
         <h1>Trading Dashboard</h1>
-        <p>Monitor and manage your orders in real time.</p>
+        <p>Monitor and manage your orders in real time via Native C++ API.</p>
       </div>
 
-      <div class="status">
+      <div class="status" id="engine-status">
         <span class="dot"></span>
-        Engine Online
+        API Online (:8080)
       </div>
     </header>
 
@@ -50,25 +50,25 @@
 
         <div class="stat-card">
           <p>Active Orders</p>
-          <h2>12</h2>
+          <h2 id="stat-active-orders">0</h2>
           <small>Currently in order book</small>
         </div>
 
         <div class="stat-card">
           <p>Executed Trades</p>
-          <h2>28</h2>
+          <h2 id="stat-executed-trades">0</h2>
           <small>Successfully matched</small>
         </div>
 
         <div class="stat-card">
           <p>Traded Quantity</p>
-          <h2>1,450</h2>
+          <h2 id="stat-traded-qty">0</h2>
           <small>Total units traded</small>
         </div>
 
         <div class="stat-card">
           <p>Traded Value</p>
-          <h2>₹2.45L</h2>
+          <h2 id="stat-traded-value">₹0.00</h2>
           <small>Total trade value</small>
         </div>
 
@@ -86,17 +86,17 @@
         <div class="form-card buy-card">
           <h3>BUY ORDER</h3>
 
-          <form>
+          <form id="buy-order-form">
             <label>Trader Name</label>
-            <input type="text" placeholder="Enter trader name">
+            <input type="text" id="buy-trader" placeholder="Enter trader name" required>
 
             <label>Price (₹)</label>
-            <input type="number" placeholder="Enter buy price">
+            <input type="number" id="buy-price" placeholder="Enter buy price" step="0.01" min="0.01" required>
 
             <label>Quantity</label>
-            <input type="number" placeholder="Enter quantity">
+            <input type="number" id="buy-qty" placeholder="Enter quantity" min="1" required>
 
-            <button type="button" class="buy-btn">
+            <button type="submit" class="buy-btn" id="buy-btn">
               Place Buy Order
             </button>
           </form>
@@ -105,17 +105,17 @@
         <div class="form-card sell-card">
           <h3>SELL ORDER</h3>
 
-          <form>
+          <form id="sell-order-form">
             <label>Trader Name</label>
-            <input type="text" placeholder="Enter trader name">
+            <input type="text" id="sell-trader" placeholder="Enter trader name" required>
 
             <label>Price (₹)</label>
-            <input type="number" placeholder="Enter sell price">
+            <input type="number" id="sell-price" placeholder="Enter sell price" step="0.01" min="0.01" required>
 
             <label>Quantity</label>
-            <input type="number" placeholder="Enter quantity">
+            <input type="number" id="sell-qty" placeholder="Enter quantity" min="1" required>
 
-            <button type="button" class="sell-btn">
+            <button type="submit" class="sell-btn" id="sell-btn">
               Place Sell Order
             </button>
           </form>
@@ -133,7 +133,7 @@
       <div class="order-book">
 
         <div class="table-card">
-          <h3 class="green-text">BUY ORDERS</h3>
+          <h3 class="green-text">BUY ORDERS (BIDS)</h3>
 
           <table>
             <thead>
@@ -142,34 +142,18 @@
                 <th>Price</th>
                 <th>Quantity</th>
                 <th>Sequence</th>
+                <th>Trader</th>
               </tr>
             </thead>
 
-            <tbody>
-              <tr>
-                <td>#101</td>
-                <td>₹105.00</td>
-                <td>20</td>
-                <td>1</td>
-              </tr>
-              <tr>
-                <td>#103</td>
-                <td>₹103.00</td>
-                <td>15</td>
-                <td>3</td>
-              </tr>
-              <tr>
-                <td>#105</td>
-                <td>₹100.00</td>
-                <td>30</td>
-                <td>5</td>
-              </tr>
+            <tbody id="order-book-buys">
+              <tr><td colspan="5" style="text-align:center; color:#64748b;">No buy orders</td></tr>
             </tbody>
           </table>
         </div>
 
         <div class="table-card">
-          <h3 class="red-text">SELL ORDERS</h3>
+          <h3 class="red-text">SELL ORDERS (ASKS)</h3>
 
           <table>
             <thead>
@@ -178,28 +162,12 @@
                 <th>Price</th>
                 <th>Quantity</th>
                 <th>Sequence</th>
+                <th>Trader</th>
               </tr>
             </thead>
 
-            <tbody>
-              <tr>
-                <td>#102</td>
-                <td>₹108.00</td>
-                <td>10</td>
-                <td>2</td>
-              </tr>
-              <tr>
-                <td>#104</td>
-                <td>₹110.00</td>
-                <td>25</td>
-                <td>4</td>
-              </tr>
-              <tr>
-                <td>#106</td>
-                <td>₹112.00</td>
-                <td>20</td>
-                <td>6</td>
-              </tr>
+            <tbody id="order-book-sells">
+              <tr><td colspan="5" style="text-align:center; color:#64748b;">No sell orders</td></tr>
             </tbody>
           </table>
         </div>
@@ -224,36 +192,12 @@
               <th>Price</th>
               <th>Quantity</th>
               <th>Value</th>
+              <th>Time</th>
             </tr>
           </thead>
 
-          <tbody>
-            <tr>
-              <td>#T01</td>
-              <td>#98</td>
-              <td>#99</td>
-              <td>₹100</td>
-              <td>10</td>
-              <td>₹1,000</td>
-            </tr>
-
-            <tr>
-              <td>#T02</td>
-              <td>#95</td>
-              <td>#97</td>
-              <td>₹105</td>
-              <td>15</td>
-              <td>₹1,575</td>
-            </tr>
-
-            <tr>
-              <td>#T03</td>
-              <td>#96</td>
-              <td>#100</td>
-              <td>₹110</td>
-              <td>20</td>
-              <td>₹2,200</td>
-            </tr>
+          <tbody id="trade-history-body">
+            <tr><td colspan="7" style="text-align:center; color:#64748b;">No trades recorded yet</td></tr>
           </tbody>
         </table>
 
@@ -277,36 +221,12 @@
               <th>Price</th>
               <th>Remaining Qty</th>
               <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
 
-          <tbody>
-            <tr>
-              <td>#101</td>
-              <td>Ananya</td>
-              <td class="green-text">BUY</td>
-              <td>₹105</td>
-              <td>20</td>
-              <td><span class="badge active-badge">ACTIVE</span></td>
-            </tr>
-
-            <tr>
-              <td>#102</td>
-              <td>Rahul</td>
-              <td class="red-text">SELL</td>
-              <td>₹108</td>
-              <td>10</td>
-              <td><span class="badge active-badge">ACTIVE</span></td>
-            </tr>
-
-            <tr>
-              <td>#103</td>
-              <td>Aman</td>
-              <td class="green-text">BUY</td>
-              <td>₹103</td>
-              <td>15</td>
-              <td><span class="badge partial-badge">PARTIAL</span></td>
-            </tr>
+          <tbody id="active-orders-body">
+            <tr><td colspan="7" style="text-align:center; color:#64748b;">No active orders</td></tr>
           </tbody>
         </table>
 
@@ -323,33 +243,34 @@
 
         <div>
           <p>Best Bid</p>
-          <h2 class="green-text">₹105.00</h2>
+          <h2 class="green-text" id="market-best-bid">--</h2>
         </div>
 
         <div>
           <p>Best Ask</p>
-          <h2 class="red-text">₹108.00</h2>
+          <h2 class="red-text" id="market-best-ask">--</h2>
         </div>
 
         <div>
           <p>Spread</p>
-          <h2>₹3.00</h2>
+          <h2 id="market-spread">--</h2>
         </div>
 
         <div>
           <p>Mid Price</p>
-          <h2>₹106.50</h2>
+          <h2 id="market-mid-price">--</h2>
         </div>
 
       </div>
     </section>
 
     <footer>
-      <p>Order Matching Engine | Built using C++, Data Structures and OOPs</p>
+      <p>Order Matching Engine | Built using C++, Data Structures, OOPs & MySQL</p>
     </footer>
 
   </main>
 
+  <script src="app.js"></script>
 </body>
 
 </html>

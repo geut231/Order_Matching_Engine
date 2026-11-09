@@ -312,3 +312,54 @@ void OrderBook::showCancelledHistory()
         cout << '\n';
     }
 }
+
+vector<Order> OrderBook::getBuys() const
+{
+    priority_queue<Order, vector<Order>, BuyCompare> temp = buys;
+    vector<Order> list;
+    while (!temp.empty())
+    {
+        list.push_back(temp.top());
+        temp.pop();
+    }
+    return list;
+}
+
+vector<Order> OrderBook::getSells() const
+{
+    priority_queue<Order, vector<Order>, SellCompare> temp = sells;
+    vector<Order> list;
+    while (!temp.empty())
+    {
+        list.push_back(temp.top());
+        temp.pop();
+    }
+    return list;
+}
+
+double OrderBook::getBestBid() const
+{
+    if (buys.empty()) return 0.0;
+    return buys.top().getrate();
+}
+
+double OrderBook::getBestAsk() const
+{
+    if (sells.empty()) return 0.0;
+    return sells.top().getrate();
+}
+
+double OrderBook::getSpread() const
+{
+    if (buys.empty() || sells.empty()) return 0.0;
+    double s = sells.top().getrate() - buys.top().getrate();
+    return s > 0 ? s : 0.0;
+}
+
+double OrderBook::getMidPrice() const
+{
+    if (buys.empty() && sells.empty()) return 0.0;
+    if (buys.empty()) return sells.top().getrate();
+    if (sells.empty()) return buys.top().getrate();
+    return (buys.top().getrate() + sells.top().getrate()) / 2.0;
+}

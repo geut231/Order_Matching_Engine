@@ -39,14 +39,14 @@ public:
 
     void show() const;
 
-    int getid();
+    int getid() const;
     double getrate() const;
-    int getqty();
-    int getoriginalqty();
+    int getqty() const;
+    int getoriginalqty() const;
     int getno() const;
-    Orderside getSide();
-    Orderstatus getStatus();
-    string getTrader();
+    Orderside getSide() const;
+    Orderstatus getStatus() const;
+    string getTrader() const;
 
     void setqty(int q);
     void setoriginalqty(int q);

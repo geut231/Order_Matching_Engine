@@ -55,5 +55,12 @@ public:
     bool findOrder(int id, Order &result);
     void showOrderBook();
     void showCancelledHistory();
+
+    vector<Order> getBuys() const;
+    vector<Order> getSells() const;
+    double getBestBid() const;
+    double getBestAsk() const;
+    double getSpread() const;
+    double getMidPrice() const;
 };
 #endif

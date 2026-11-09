@@ -29,7 +29,7 @@ void Order::showDetails()
     show();
 }
 
-int Order::getid()
+int Order::getid() const
 {
     return id;
 }
@@ -39,12 +39,12 @@ double Order::getrate() const
     return rate;
 }
 
-int Order::getqty()
+int Order::getqty() const
 {
     return qty;
 }
 
-int Order::getoriginalqty()
+int Order::getoriginalqty() const
 {
     return originalqty;
 }
@@ -54,17 +54,17 @@ int Order::getno() const
     return no;
 }
 
-Orderside Order::getSide()
+Orderside Order::getSide() const
 {
     return side;
 }
 
-Orderstatus Order::getStatus()
+Orderstatus Order::getStatus() const
 {
     return status;
 }
 
-string Order::getTrader()
+string Order::getTrader() const
 {
     return trader;
 }

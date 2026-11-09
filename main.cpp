@@ -1,21 +1,31 @@
-#include "Database.cpp"
 #include <iostream>
 #include <string>
 #include <limits>
 #include "MatchingEngine.h"
 #include "Database.h"
+#include "HttpServer.h"
 using namespace std;
 
 int main()
 {   
-   Database db;
+    Database db;
 
-if (!db.connect())
-{
-    return 1;
-}
+    if (!db.connect())
+    {
+        return 1;
+    }
 
-MatchingEngine engine(&db);
+    MatchingEngine engine(&db);
+
+    // Launch Native C++ HTTP API Server
+    HttpServer server(&engine, &db, 8080);
+    if (server.start())
+    {
+        cout << "\n=======================================================\n";
+        cout << "  HTTP REST API & Web Dashboard Started!\n";
+        cout << "  Open: http://localhost:8080\n";
+        cout << "=======================================================\n";
+    }
     int choice = -1;
 
     do
@@ -128,6 +138,7 @@ MatchingEngine engine(&db);
         }
     } while (choice != 0);
 
+    server.stop();
     cout << "Exiting Order Matching Engine.\n";
     return 0;
 }

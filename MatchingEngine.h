@@ -48,6 +48,9 @@ public:
 
     void showOrderBook();
 
+    const OrderBook& getOrderBook() const { return orderBook; }
+    OrderBook& getOrderBook() { return orderBook; }
+
     int getNextOrderId();
     int getNextSequence();
 };

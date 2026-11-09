@@ -250,6 +250,45 @@ void Database::showTradeHistory()
 
     mysql_free_result(result);
 }
+
+vector<TradeRecord> Database::getTradeHistory()
+{
+    vector<TradeRecord> list;
+    if (!conn)
+    {
+        return list;
+    }
+
+    string query = "SELECT trade_id, buy_order_id, sell_order_id, trade_price, trade_quantity, trade_time FROM Trades ORDER BY trade_id DESC";
+
+    if (mysql_query(conn, query.c_str()) != 0)
+    {
+        return list;
+    }
+
+    MYSQL_RES *result = mysql_store_result(conn);
+    if (!result)
+    {
+        return list;
+    }
+
+    MYSQL_ROW row;
+    while ((row = mysql_fetch_row(result)))
+    {
+        TradeRecord tr;
+        tr.tradeId = row[0] ? stoi(row[0]) : 0;
+        tr.buyOrderId = row[1] ? stoi(row[1]) : 0;
+        tr.sellOrderId = row[2] ? stoi(row[2]) : 0;
+        tr.price = row[3] ? stod(row[3]) : 0.0;
+        tr.quantity = row[4] ? stoi(row[4]) : 0;
+        tr.time = row[5] ? row[5] : "";
+        list.push_back(tr);
+    }
+
+    mysql_free_result(result);
+    return list;
+}
+
 void Database::close()
 {
     if (conn != NULL)

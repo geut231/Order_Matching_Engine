@@ -3,7 +3,19 @@
 
 #include <mysql.h>
 #include <string>
+#include <vector>
 using namespace std;
+
+struct TradeRecord
+{
+    int tradeId;
+    int buyOrderId;
+    int sellOrderId;
+    double price;
+    int quantity;
+    string time;
+};
+
 class OrderBook;
 class Database
 {
@@ -42,6 +54,7 @@ public:
 );
     bool loadOrders(OrderBook& orderBook);
     void showTradeHistory();
+    vector<TradeRecord> getTradeHistory();
     void close();
 };
 
