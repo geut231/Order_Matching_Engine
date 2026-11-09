@@ -2,9 +2,6 @@
 #include <iostream>
 #include <string>
 #include <limits>
-#include "Order.cpp"
-#include "OrderBook.cpp"
-#include "MatchingEngine.cpp"
 #include "MatchingEngine.h"
 #include "Database.h"
 using namespace std;
