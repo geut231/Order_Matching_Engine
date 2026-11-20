@@ -2,15 +2,17 @@
 set "PATH=C:\msys64\ucrt64\bin;%PATH%"
 
 echo Building Order Matching Engine with Native HTTP API...
-g++ main.cpp Order.cpp OrderBook.cpp MatchingEngine.cpp Database.cpp HttpServer.cpp -I"C:\msys64\ucrt64\include\mysql" -L"C:\msys64\ucrt64\lib" -lmysqlclient -lws2_32 -o engine.exe
+g++ -static-libgcc -static-libstdc++ main.cpp Order.cpp OrderBook.cpp MatchingEngine.cpp Database.cpp HttpServer.cpp -I"C:\msys64\ucrt64\include\mysql" -L"C:\msys64\ucrt64\lib" -lmysqlclient -lws2_32 -o engine.exe
 
 if %ERRORLEVEL% equ 0 (
+    if not exist libmariadb.dll copy "C:\msys64\ucrt64\bin\libmariadb.dll" . >nul
+    if not exist libwinpthread-1.dll copy "C:\msys64\ucrt64\bin\libwinpthread-1.dll" . >nul
     echo.
     echo =======================================================
     echo  Build Successful: engine.exe
+    echo  Now run: .\engine.exe
     echo =======================================================
 ) else (
     echo.
     echo [ERROR] Build failed! Check compiler output above.
 )
-

@@ -21,6 +21,9 @@ class Database
 {
 private:
     MYSQL *conn;
+    bool connected;
+    vector<TradeRecord> fallbackTrades;
+    int nextFallbackTradeId;
 
 public:
     Database();
@@ -28,6 +31,7 @@ public:
     int getNextOrderId();
     int getNextSequence();
     bool connect();
+    bool isConnected() const { return connected; }
     bool insertOrder(
     int id,
     double price,

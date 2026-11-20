@@ -3,11 +3,14 @@
 #include "OrderBook.h"
 #include "db_config.h"
 #include <iostream>
+#include <algorithm>
 using namespace std;
 
 Database::Database()
 {
     conn = mysql_init(NULL);
+    connected = false;
+    nextFallbackTradeId = 1;
 }
 
 Database::~Database()
@@ -17,7 +20,7 @@ Database::~Database()
 
 bool Database::connect()
 {
-    if (mysql_real_connect(
+    if (conn && mysql_real_connect(
             conn,
             DB_HOST,
             DB_USER,
@@ -27,25 +30,33 @@ bool Database::connect()
             NULL,
             0))
     {
-        cout << "MySQL Connected Successfully!\n";
+        cout << "[Database] MySQL Connected Successfully!\n";
+        connected = true;
         return true;
     }
 
-    cout << "Database Connection Failed: "
-         << mysql_error(conn) << endl;
+    connected = false;
+    cout << "\n[Database] Notice: Could not connect to MySQL ("
+         << (conn ? mysql_error(conn) : "Init error") << ").\n";
+    cout << "[Database] Running in In-Memory / Standalone Mode.\n";
+    cout << "           (All matching, API endpoints, and web dashboard will work in RAM)\n\n";
 
     return false;
 }
+
 int Database::getNextOrderId()
 {
+    if (!connected || !conn) return 1;
+
     string query = "SELECT MAX(order_id) FROM Orders";
 
     if (mysql_query(conn, query.c_str()) == 0)
     {
         MYSQL_RES *result = mysql_store_result(conn);
+        if (!result) return 1;
         MYSQL_ROW row = mysql_fetch_row(result);
 
-        int id = (row[0] == NULL) ? 1 : stoi(row[0]) + 1;
+        int id = (row == NULL || row[0] == NULL) ? 1 : stoi(row[0]) + 1;
 
         mysql_free_result(result);
 
@@ -54,16 +65,20 @@ int Database::getNextOrderId()
 
     return 1;
 }
+
 int Database::getNextSequence()
 {
+    if (!connected || !conn) return 1;
+
     string query = "SELECT MAX(order_no) FROM Orders";
 
     if (mysql_query(conn, query.c_str()) == 0)
     {
         MYSQL_RES *result = mysql_store_result(conn);
+        if (!result) return 1;
         MYSQL_ROW row = mysql_fetch_row(result);
 
-        int sequence = (row[0] == NULL) ? 1 : stoi(row[0]) + 1;
+        int sequence = (row == NULL || row[0] == NULL) ? 1 : stoi(row[0]) + 1;
 
         mysql_free_result(result);
 
@@ -72,6 +87,7 @@ int Database::getNextSequence()
 
     return 1;
 }
+
 bool Database::insertOrder(
     int id,
     double price,
@@ -82,6 +98,11 @@ bool Database::insertOrder(
     string status,
     string trader)
 {
+    if (!connected || !conn)
+    {
+        return true;
+    }
+
     string query =
         "INSERT INTO Orders VALUES (" +
         to_string(id) + ", " +
@@ -98,13 +119,19 @@ bool Database::insertOrder(
         return true;
     }
 
-    cout << "Order could not be saved: "
+    cout << "Order could not be saved to DB: "
          << mysql_error(conn) << endl;
 
     return false;
 }
+
 bool Database::updateOrderStatus(int id, string status)
 {
+    if (!connected || !conn)
+    {
+        return true;
+    }
+
     string query =
         "UPDATE Orders SET status = '" + status +
         "' WHERE order_id = " + to_string(id);
@@ -119,6 +146,7 @@ bool Database::updateOrderStatus(int id, string status)
 
     return false;
 }
+
 bool Database::updateOrder(
     int id,
     double price,
@@ -126,6 +154,11 @@ bool Database::updateOrder(
     int orderNo,
     string status)
 {
+    if (!connected || !conn)
+    {
+        return true;
+    }
+
     string query =
         "UPDATE Orders SET rate = " + to_string(price) +
         ", qty = " + to_string(quantity) +
@@ -143,12 +176,27 @@ bool Database::updateOrder(
 
     return false;
 }
+
 bool Database::insertTrade(
     int buyOrderId,
     int sellOrderId,
     double tradePrice,
     int tradeQuantity)
 {
+    TradeRecord tr;
+    tr.tradeId = nextFallbackTradeId++;
+    tr.buyOrderId = buyOrderId;
+    tr.sellOrderId = sellOrderId;
+    tr.price = tradePrice;
+    tr.quantity = tradeQuantity;
+    tr.time = "Just now";
+    fallbackTrades.push_back(tr);
+
+    if (!connected || !conn)
+    {
+        return true;
+    }
+
     string query =
         "INSERT INTO Trades "
         "(buy_order_id, sell_order_id, trade_price, trade_quantity) VALUES (" +
@@ -162,13 +210,19 @@ bool Database::insertTrade(
         return true;
     }
 
-    cout << "Trade could not be saved: "
+    cout << "Trade could not be saved to DB: "
          << mysql_error(conn) << endl;
 
     return false;
 }
+
 bool Database::loadOrders(OrderBook& orderBook)
 {
+    if (!connected || !conn)
+    {
+        return false;
+    }
+
     string query =
         "SELECT order_id, rate, qty, original_qty, "
         "order_no, side, status, trader "
@@ -183,6 +237,7 @@ bool Database::loadOrders(OrderBook& orderBook)
     }
 
     MYSQL_RES *result = mysql_store_result(conn);
+    if (!result) return false;
     MYSQL_ROW row;
 
     while ((row = mysql_fetch_row(result)))
@@ -222,55 +277,50 @@ bool Database::loadOrders(OrderBook& orderBook)
 
     return true;
 }
+
 void Database::showTradeHistory()
 {
-    string query = "SELECT * FROM Trades ORDER BY trade_id";
+    vector<TradeRecord> trades = getTradeHistory();
 
-    if (mysql_query(conn, query.c_str()) != 0)
+    cout << "\nTRADE HISTORY\n";
+    if (trades.empty())
     {
-        cout << "Could not load trade history: "
-             << mysql_error(conn) << endl;
+        cout << "No executed trades yet.\n";
         return;
     }
 
-    MYSQL_RES *result = mysql_store_result(conn);
-    MYSQL_ROW row;
-
-    cout << "\nTRADE HISTORY\n";
-
-    while ((row = mysql_fetch_row(result)))
+    for (const auto& t : trades)
     {
-        cout << "\nTrade ID: " << row[0] << endl;
-        cout << "Buy Order ID: " << row[1] << endl;
-        cout << "Sell Order ID: " << row[2] << endl;
-        cout << "Trade Price: " << row[3] << endl;
-        cout << "Trade Quantity: " << row[4] << endl;
-        cout << "Trade Time: " << row[5] << endl;
+        cout << "\nTrade ID: " << t.tradeId << endl;
+        cout << "Buy Order ID: " << t.buyOrderId << endl;
+        cout << "Sell Order ID: " << t.sellOrderId << endl;
+        cout << "Trade Price: " << t.price << endl;
+        cout << "Trade Quantity: " << t.quantity << endl;
+        cout << "Trade Time: " << t.time << endl;
     }
-
-    mysql_free_result(result);
 }
 
 vector<TradeRecord> Database::getTradeHistory()
 {
-    vector<TradeRecord> list;
-    if (!conn)
+    if (!connected || !conn)
     {
-        return list;
+        vector<TradeRecord> rev = fallbackTrades;
+        reverse(rev.begin(), rev.end());
+        return rev;
     }
 
+    vector<TradeRecord> list;
     string query = "SELECT trade_id, buy_order_id, sell_order_id, trade_price, trade_quantity, trade_time FROM Trades ORDER BY trade_id DESC";
 
     if (mysql_query(conn, query.c_str()) != 0)
     {
-        return list;
+        vector<TradeRecord> rev = fallbackTrades;
+        reverse(rev.begin(), rev.end());
+        return rev;
     }
 
     MYSQL_RES *result = mysql_store_result(conn);
-    if (!result)
-    {
-        return list;
-    }
+    if (!result) return fallbackTrades;
 
     MYSQL_ROW row;
     while ((row = mysql_fetch_row(result)))
@@ -296,4 +346,5 @@ void Database::close()
         mysql_close(conn);
         conn = NULL;
     }
+    connected = false;
 }

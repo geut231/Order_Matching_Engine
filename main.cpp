@@ -9,11 +9,7 @@ using namespace std;
 int main()
 {   
     Database db;
-
-    if (!db.connect())
-    {
-        return 1;
-    }
+    db.connect();
 
     MatchingEngine engine(&db);
 
