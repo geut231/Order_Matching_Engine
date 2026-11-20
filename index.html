@@ -16,6 +16,7 @@
     <nav>
       <a href="#dashboard" class="active">Dashboard</a>
       <a href="#place-order">Place Order</a>
+      <a href="#charts">Visualizations</a>
       <a href="#order-book">Order Book</a>
       <a href="#trades">Trade History</a>
       <a href="#active-orders">Active Orders</a>
@@ -123,6 +124,46 @@
         </div>
 
       </div>
+    </section>
+
+    <!-- Market Visualizations: Depth Chart & Price Chart -->
+
+    <section id="charts">
+
+      <h2 class="section-title">Market Visualizations</h2>
+
+      <div class="charts-grid">
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>MARKET DEPTH (CUMULATIVE LIQUIDITY)</h3>
+            <span class="chart-badge">Live Depth</span>
+          </div>
+          <div class="canvas-container">
+            <canvas id="depthChart"></canvas>
+          </div>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-color green-bg"></span> Bids (Buy Depth)</span>
+            <span class="legend-item"><span class="legend-color red-bg"></span> Asks (Sell Depth)</span>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>REAL-TIME TRADE PRICE & EXECUTION TAPE</h3>
+            <span class="chart-badge">Price Action</span>
+          </div>
+          <div class="canvas-container">
+            <canvas id="priceChart"></canvas>
+          </div>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-color blue-bg"></span> Executed Price Line</span>
+            <span class="legend-item"><span class="legend-dot green-dot"></span> Trade Fills</span>
+          </div>
+        </div>
+
+      </div>
+
     </section>
 
     <!-- Order Book -->

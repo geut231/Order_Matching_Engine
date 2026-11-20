@@ -18,13 +18,15 @@ The engine follows the **Price-Time Priority** principle:
 ## Features
 
 - **Limit Order Placement**: Buy and Sell limit orders with trader identification.
-- **Price-Time Priority Matching**: Instant matching using max/min priority queues.
+- **High-Performance L2/L3 Order Book**: Built with price-level maps (`std::map<double, std::list<Order>>`) and an `std::unordered_map` index enabling **$O(1)$ order lookups, $O(1)$ cancellations, and $O(\log P)$ price-level insertions**.
+- **Price-Time Priority Matching**: Strict FIFO execution per price level with resting liquidity preservation.
 - **Full & Partial Execution**: Remaining quantities persist in the order book.
-- **Order Cancellation & Modification**: Real-time order state updates.
+- **Order Cancellation & Modification**: Real-time state updates in constant and logarithmic time.
 - **MySQL Persistence**: Orders and executed trades are saved to disk with crash recovery on startup.
 - **Trader File Handling (C++ fstream)**: Every user gets their own dedicated ledger file (`user_history/<trader>.txt`) tracking all of their order placements, trade fills, cancellations, and modifications.
 - **Native C++ HTTP REST API**: Integrated multi-threaded web server (`Winsock2`) exposing REST endpoints.
 - **Real-Time Web Dashboard**: Live updating dashboard displaying order books, active orders, executed trade history, and market spreads.
+- **Interactive Visualizations**: Real-time canvas-based **Market Depth Chart (L2 Cumulative Liquidity)** and **Trade Price Action / Execution Chart**.
 
 ---
 
