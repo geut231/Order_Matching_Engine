@@ -22,6 +22,7 @@ The engine follows the **Price-Time Priority** principle:
 - **Full & Partial Execution**: Remaining quantities persist in the order book.
 - **Order Cancellation & Modification**: Real-time order state updates.
 - **MySQL Persistence**: Orders and executed trades are saved to disk with crash recovery on startup.
+- **Trader File Handling (C++ fstream)**: Every user gets their own dedicated ledger file (`user_history/<trader>.txt`) tracking all of their order placements, trade fills, cancellations, and modifications.
 - **Native C++ HTTP REST API**: Integrated multi-threaded web server (`Winsock2`) exposing REST endpoints.
 - **Real-Time Web Dashboard**: Live updating dashboard displaying order books, active orders, executed trade history, and market spreads.
 
@@ -36,6 +37,8 @@ The engine follows the **Price-Time Priority** principle:
 | `GET` | `/api/order-book` | Returns current bids and asks queues sorted by priority |
 | `GET` | `/api/active-orders` | Returns all pending orders currently in the book |
 | `GET` | `/api/trades` | Returns historical executed trades from MySQL |
+| `GET` | `/api/user-history?trader=...` | Returns specific user's file-based order & trade history |
+| `GET` | `/api/traders` | Returns list of all known traders who have history files |
 | `POST` | `/api/orders` | Place a new Buy or Sell order and trigger matching |
 | `POST` | `/api/cancel` | Cancel an active order by ID |
 | `POST` | `/api/modify` | Modify price and quantity of an active order |
@@ -57,7 +60,7 @@ The engine follows the **Price-Time Priority** principle:
 ### Build
 Run `build.bat` or compile with MinGW / GCC:
 ```bash
-g++ main.cpp Order.cpp OrderBook.cpp MatchingEngine.cpp Database.cpp HttpServer.cpp -I"C:\msys64\ucrt64\include\mysql" -L"C:\msys64\ucrt64\lib" -lmysqlclient -lws2_32 -o engine.exe
+g++ -std=c++17 -static-libgcc -static-libstdc++ main.cpp Order.cpp OrderBook.cpp MatchingEngine.cpp Database.cpp HttpServer.cpp TraderHistory.cpp -I"C:\msys64\ucrt64\include\mysql" -L"C:\msys64\ucrt64\lib" -lmysqlclient -lws2_32 -o engine.exe
 ```
 
 ### Run

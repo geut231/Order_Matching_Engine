@@ -7,6 +7,7 @@ MatchingEngine::MatchingEngine(Database* database)
 {
     db = database;
     orderBook.setDatabase(database);
+    orderBook.setHistory(&history);
     db->loadOrders(orderBook);
     nextOrderId = db->getNextOrderId();
     nextSequence = db->getNextSequence();
@@ -49,6 +50,7 @@ bool MatchingEngine::placeBuyOrder(
     }
 
     orderBook.addbuy(order);
+    history.logOrderPlacement(order);
     nextOrderId++;
     nextSequence++;
 
@@ -93,6 +95,7 @@ bool MatchingEngine::placeSellOrder(
         return false;
     }
     orderBook.addsell(order);
+    history.logOrderPlacement(order);
 
     nextOrderId++;
     nextSequence++;
@@ -176,4 +179,9 @@ int MatchingEngine::getNextOrderId()
 int MatchingEngine::getNextSequence()
 {
     return nextSequence;
+}
+
+void MatchingEngine::showTraderHistory(const string& trader)
+{
+    history.printHistory(trader);
 }

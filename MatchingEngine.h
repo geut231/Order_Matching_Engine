@@ -3,6 +3,7 @@
 
 #include "Order.h"
 #include "OrderBook.h"
+#include "TraderHistory.h"
 
 using namespace std;
 
@@ -11,6 +12,7 @@ class MatchingEngine
 {
 private:
     OrderBook orderBook;
+    TraderHistory history;
 
     int nextOrderId;
     int nextSequence;
@@ -50,6 +52,10 @@ public:
 
     const OrderBook& getOrderBook() const { return orderBook; }
     OrderBook& getOrderBook() { return orderBook; }
+
+    TraderHistory& getHistory() { return history; }
+    const TraderHistory& getHistory() const { return history; }
+    void showTraderHistory(const string& trader);
 
     int getNextOrderId();
     int getNextSequence();

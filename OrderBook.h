@@ -33,16 +33,19 @@ struct SellCompare
     }
 };
 class Database;
+class TraderHistory;
 class OrderBook
 {
 private:
     Database* db;
+    TraderHistory* history;
     priority_queue<Order, vector<Order>, BuyCompare> buys;
     priority_queue<Order, vector<Order>, SellCompare> sells;
     vector<Order> cancelledHistory;
 
 public:
     void setDatabase(Database* database);
+    void setHistory(TraderHistory* h);
     void addbuy(Order o);
     void addsell(Order o);
     void showbuy();

@@ -1,9 +1,14 @@
 #include "Database.h"
 #include "OrderBook.h"
+#include "TraderHistory.h"
 #include <algorithm>
 void OrderBook::setDatabase(Database* database)
 {
     db = database;
+}
+void OrderBook::setHistory(TraderHistory* h)
+{
+    history = h;
 }
 void OrderBook::addbuy(Order o)
 {
@@ -96,6 +101,12 @@ void OrderBook::matchOrders()
         buy.execute(quantity);
         sell.execute(quantity);
 
+        if (history)
+        {
+            history->logTradeExecution(buy.getTrader(), "BUY", buy.getid(), tradePrice, quantity, sell.getTrader(), sell.getid());
+            history->logTradeExecution(sell.getTrader(), "SELL", sell.getid(), tradePrice, quantity, buy.getTrader(), buy.getid());
+        }
+
         if (!db->insertTrade(
                 buy.getid(),
                 sell.getid(),
@@ -142,6 +153,10 @@ bool OrderBook::cancelOrder(int id)
         {
             o.cancel();
             cancelledHistory.push_back(o);
+            if (history)
+            {
+                history->logOrderCancellation(o.getTrader(), o.getid(), o.getsidestring(), o.getrate(), o.getqty());
+            }
             found = true;
         }
         else
@@ -159,6 +174,10 @@ bool OrderBook::cancelOrder(int id)
         {
             o.cancel();
             cancelledHistory.push_back(o);
+            if (history)
+            {
+                history->logOrderCancellation(o.getTrader(), o.getid(), o.getsidestring(), o.getrate(), o.getqty());
+            }
             found = true;
         }
         else
@@ -291,6 +310,11 @@ bool OrderBook::modifyOrder(
     else
     {
         addsell(o);
+    }
+
+    if (history)
+    {
+        history->logOrderModification(o.getTrader(), id, newPrice, newQuantity);
     }
 
     return true;

@@ -29,7 +29,7 @@ private:
     void run();
     void handleClient(SOCKET clientSocket);
 
-    std::string handleRequest(const std::string& method, const std::string& path, const std::string& body);
+    std::string handleRequest(const std::string& method, const std::string& path, const std::string& query, const std::string& body);
     std::string getContentType(const std::string& path);
     std::string readFile(const std::string& filepath);
 
@@ -38,6 +38,8 @@ private:
     std::string handleGetOrderBook();
     std::string handleGetActiveOrders();
     std::string handleGetTrades();
+    std::string handleGetUserHistory(const std::string& trader);
+    std::string handleGetTraders();
     std::string handlePostOrder(const std::string& body);
     std::string handlePostCancel(const std::string& body);
     std::string handlePostModify(const std::string& body);

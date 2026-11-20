@@ -35,6 +35,7 @@ int main()
         cout << "6. Search Active Order\n";
         cout << "7. Process Matching\n";
         cout << "8. Show Trade History\n";
+        cout << "9. View User/Trader History (File Handling)\n";
         cout << "0. Exit\n";
         cout << "Enter choice: ";
 
@@ -127,6 +128,13 @@ int main()
         else if (choice == 8)
         {
             db.showTradeHistory();
+        }
+        else if (choice == 9)
+        {
+            string trader;
+            cout << "Enter trader name: ";
+            cin >> trader;
+            engine.showTraderHistory(trader);
         }
         else if (choice != 0)
         {

@@ -184,9 +184,11 @@ void HttpServer::handleClient(SOCKET clientSocket)
     reqStream >> method >> path >> version;
 
     // Remove query params if any
+    string query = "";
     size_t queryPos = path.find('?');
     if (queryPos != string::npos)
     {
+        query = path.substr(queryPos + 1);
         path = path.substr(0, queryPos);
     }
 
@@ -198,7 +200,7 @@ void HttpServer::handleClient(SOCKET clientSocket)
         body = requestRaw.substr(headerEnd + 4);
     }
 
-    string response = handleRequest(method, path, body);
+    string response = handleRequest(method, path, query, body);
     send(clientSocket, response.c_str(), static_cast<int>(response.length()), 0);
     closesocket(clientSocket);
 }
@@ -221,7 +223,7 @@ string HttpServer::readFile(const string& filepath)
     return ss.str();
 }
 
-string HttpServer::handleRequest(const string& method, const string& path, const string& body)
+string HttpServer::handleRequest(const string& method, const string& path, const string& query, const string& body)
 {
     // Handle CORS preflight
     if (method == "OPTIONS")
@@ -288,6 +290,22 @@ string HttpServer::handleRequest(const string& method, const string& path, const
         else if (path == "/api/trades")
         {
             return handleGetTrades();
+        }
+        else if (path == "/api/user-history")
+        {
+            string trader = "";
+            size_t tPos = query.find("trader=");
+            if (tPos != string::npos)
+            {
+                trader = query.substr(tPos + 7);
+                size_t ampPos = trader.find('&');
+                if (ampPos != string::npos) trader = trader.substr(0, ampPos);
+            }
+            return handleGetUserHistory(trader);
+        }
+        else if (path == "/api/traders")
+        {
+            return handleGetTraders();
         }
     }
     else if (method == "POST")
@@ -461,6 +479,64 @@ string HttpServer::handleGetTrades()
              << "\"value\":" << val << ","
              << "\"time\":\"" << escapeJson(trades[i].time) << "\""
              << "}";
+    }
+    json << "]";
+
+    string res = json.str();
+    return "HTTP/1.1 200 OK\r\n"
+           "Content-Type: application/json; charset=utf-8\r\n"
+           "Content-Length: " + to_string(res.size()) + "\r\n"
+           "Access-Control-Allow-Origin: *\r\n"
+           "Connection: close\r\n\r\n" + res;
+}
+
+string HttpServer::handleGetUserHistory(const string& trader)
+{
+    lock_guard<mutex> lock(engineMutex);
+
+    vector<TraderHistoryEntry> entries = engine->getHistory().getHistory(trader);
+
+    ostringstream json;
+    json << "{\"trader\":\"" << escapeJson(trader) << "\","
+         << "\"has_file\":" << (engine->getHistory().hasHistory(trader) ? "true" : "false") << ","
+         << "\"history\":[";
+
+    for (size_t i = 0; i < entries.size(); ++i)
+    {
+        if (i > 0) json << ",";
+        json << "{"
+             << "\"timestamp\":\"" << escapeJson(entries[i].timestamp) << "\","
+             << "\"action\":\"" << escapeJson(entries[i].action) << "\","
+             << "\"order_id\":" << entries[i].orderId << ","
+             << "\"side\":\"" << escapeJson(entries[i].side) << "\","
+             << "\"price\":" << fixed << setprecision(2) << entries[i].price << ","
+             << "\"quantity\":" << entries[i].quantity << ","
+             << "\"counterparty\":\"" << escapeJson(entries[i].counterparty) << "\","
+             << "\"details\":\"" << escapeJson(entries[i].details) << "\""
+             << "}";
+    }
+    json << "]}";
+
+    string res = json.str();
+    return "HTTP/1.1 200 OK\r\n"
+           "Content-Type: application/json; charset=utf-8\r\n"
+           "Content-Length: " + to_string(res.size()) + "\r\n"
+           "Access-Control-Allow-Origin: *\r\n"
+           "Connection: close\r\n\r\n" + res;
+}
+
+string HttpServer::handleGetTraders()
+{
+    lock_guard<mutex> lock(engineMutex);
+
+    vector<string> traders = engine->getHistory().getAllTraders();
+
+    ostringstream json;
+    json << "[";
+    for (size_t i = 0; i < traders.size(); ++i)
+    {
+        if (i > 0) json << ",";
+        json << "\"" << escapeJson(traders[i]) << "\"";
     }
     json << "]";
 

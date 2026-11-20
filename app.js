@@ -169,6 +169,93 @@ function refreshAll() {
   refreshOrderBook();
   refreshActiveOrders();
   refreshTrades();
+  refreshTradersList();
+  if (currentViewedTrader) {
+    loadTraderHistory(currentViewedTrader, false);
+  }
+}
+
+let currentViewedTrader = '';
+
+async function refreshTradersList() {
+  try {
+    const res = await fetch(`${API_BASE}/api/traders`);
+    if (!res.ok) return;
+    const traders = await res.json();
+    const container = document.getElementById('traders-chips');
+    if (!container) return;
+
+    if (!traders || traders.length === 0) {
+      container.innerHTML = '<span style="color:#64748b; font-size:12px;">(none yet)</span>';
+      return;
+    }
+
+    container.innerHTML = traders.map(t => `
+      <span class="badge active-badge" style="cursor:pointer; user-select:none;" onclick="selectTrader('${t}')">${t}</span>
+    `).join('');
+  } catch (err) {
+    console.error('Failed to load traders list:', err);
+  }
+}
+
+function selectTrader(name) {
+  const input = document.getElementById('user-history-input');
+  if (input) input.value = name;
+  loadTraderHistory(name, true);
+}
+
+async function loadTraderHistory(traderName, showStatus = true) {
+  if (!traderName) return;
+  currentViewedTrader = traderName;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/user-history?trader=${encodeURIComponent(traderName)}`);
+    if (!res.ok) return;
+    const data = await res.json();
+
+    const statusElem = document.getElementById('user-history-status');
+    const tbody = document.getElementById('user-history-body');
+
+    if (showStatus && statusElem) {
+      if (data.has_file) {
+        statusElem.textContent = `Displaying history from file for: ${data.trader} (user_history/${data.trader}.txt)`;
+        statusElem.style.color = '#4ade80';
+      } else {
+        statusElem.textContent = `No history file found for trader "${data.trader}". Please place an order first.`;
+        statusElem.style.color = '#fbbf24';
+      }
+    }
+
+    if (!data.history || data.history.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#64748b;">No history records found for ${data.trader}</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = data.history.map(h => {
+      let badgeStyle = 'background:#1e3a5f; color:#38bdf8;';
+      if (h.action === 'PLACED') badgeStyle = 'background:#123326; color:#4ade80;';
+      else if (h.action === 'EXECUTED') badgeStyle = 'background:#2e1065; color:#c084fc;';
+      else if (h.action === 'CANCELLED') badgeStyle = 'background:#451a1a; color:#fca5a5;';
+      else if (h.action === 'MODIFIED') badgeStyle = 'background:#3b2d16; color:#fbbf24;';
+
+      const sideClass = h.side === 'BUY' ? 'green-text' : (h.side === 'SELL' ? 'red-text' : '');
+
+      return `
+        <tr>
+          <td style="white-space:nowrap; font-size:12px;">${h.timestamp}</td>
+          <td><span class="badge" style="${badgeStyle}">${h.action}</span></td>
+          <td>#${h.order_id}</td>
+          <td class="${sideClass}">${h.side}</td>
+          <td>${h.price > 0 ? formatCurrency(h.price) : '-'}</td>
+          <td>${h.quantity > 0 ? formatNumber(h.quantity) : '-'}</td>
+          <td>${h.counterparty || '-'}</td>
+          <td style="font-size:12px; color:#cbd5e1;">${h.details}</td>
+        </tr>
+      `;
+    }).join('');
+  } catch (err) {
+    console.error('Failed to load trader history:', err);
+  }
 }
 
 // Setup Event Listeners
@@ -224,6 +311,28 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Network error placing sell order: ' + err.message);
     }
   });
+
+  // User History Load Button
+  const loadHistoryBtn = document.getElementById('load-history-btn');
+  const userHistoryInput = document.getElementById('user-history-input');
+  if (loadHistoryBtn && userHistoryInput) {
+    loadHistoryBtn.addEventListener('click', () => {
+      const trader = userHistoryInput.value.trim();
+      if (trader) {
+        loadTraderHistory(trader, true);
+      }
+    });
+
+    userHistoryInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const trader = userHistoryInput.value.trim();
+        if (trader) {
+          loadTraderHistory(trader, true);
+        }
+      }
+    });
+  }
 
   // Initial load
   refreshAll();

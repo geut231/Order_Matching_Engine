@@ -19,6 +19,7 @@
       <a href="#order-book">Order Book</a>
       <a href="#trades">Trade History</a>
       <a href="#active-orders">Active Orders</a>
+      <a href="#user-history">User History</a>
       <a href="#market">Market Summary</a>
     </nav>
 
@@ -231,6 +232,52 @@
         </table>
 
       </div>
+    </section>
+
+    <!-- User Order & Trade History (File Handling) -->
+
+    <section id="user-history">
+
+      <h2 class="section-title">Trader Order & Trade History (File Handling)</h2>
+
+      <div class="table-card" style="margin-bottom: 22px;">
+        <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 220px;">
+            <label style="color: #94a3b8; font-size: 13px; display: block; margin-bottom: 8px;">Enter Trader Name</label>
+            <input type="text" id="user-history-input" placeholder="e.g. Alice, Bob, Ananya" style="width: 100%; padding: 12px; background: #0b1120; border: 1px solid #334155; border-radius: 8px; color: #fff; font-size: 14px;">
+          </div>
+          <button type="button" id="load-history-btn" class="buy-btn" style="padding: 12px 24px; cursor: pointer; height: 44px; border: none; border-radius: 8px; font-weight: bold;">
+            Load History from File
+          </button>
+        </div>
+        <div id="user-history-traders" style="margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <small style="color: #94a3b8;">Known Traders in system:</small>
+          <span id="traders-chips" style="display: flex; gap: 6px; flex-wrap: wrap;"></span>
+        </div>
+        <p id="user-history-status" style="margin-top: 12px; font-size: 13px; color: #38bdf8;"></p>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Action</th>
+              <th>Order ID</th>
+              <th>Side</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Counterparty</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+
+          <tbody id="user-history-body">
+            <tr><td colspan="8" style="text-align:center; color:#64748b;">Enter a trader name above to load their history from file</td></tr>
+          </tbody>
+        </table>
+      </div>
+
     </section>
 
     <!-- Market Summary -->
